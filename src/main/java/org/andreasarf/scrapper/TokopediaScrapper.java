@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.andreasarf.exception.FailedScrappingException;
 import org.andreasarf.model.Product;
 import org.andreasarf.webdriver.DefaultWebDriver;
 import org.openqa.selenium.By;
@@ -66,7 +67,8 @@ public class TokopediaScrapper {
      * @param count max number of product returned
      * @return list containing product based on category
      */
-    public List<Product> extractProductList(Category category, int count) {
+    public List<Product> extractProductList(Category category, int count)
+            throws FailedScrappingException {
         final DefaultWebDriver webDriver = new DefaultWebDriver();
         final List<Product> products = new ArrayList<>(count);
         final String baseUrl = getUrl(category);
@@ -105,11 +107,9 @@ public class TokopediaScrapper {
 
             }
         } catch (Exception e) {
-            System.err.println("EX: " + e.getMessage());
-            System.err.println(e.toString());
+            throw new FailedScrappingException(e.getMessage());
         } finally {
             webDriver.quit();
-            products.forEach(p -> System.out.println(p.getName()));
         }
 
         return products;
